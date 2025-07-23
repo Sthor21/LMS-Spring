@@ -1,64 +1,56 @@
 package com.infosys.beans;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import org.springframework.stereotype.Component;
+import java.time.LocalDate;
 
-@Component
+@Entity
+@Table(name = "books")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class Book {
-    private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(nullable = false)
     private String title;
+
+    @Column(nullable = false)
     private String author;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    private String publisher;
+
+    @Column(name = "page_count")
+    private Integer pageCount;
+
+    @Column(columnDefinition = "TEXT")
+    private String genres;
+
+    @Column(length = 50, unique = true)
     private String isbn;
 
-    public Book() {
-    }
+    @Column(length = 50)
+    private String language;
 
-    public Book(String id, String title, String author, String isbn) {
-        this.id = id;
-        this.title = title;
-        this.author = author;
-        this.isbn = isbn;
-    }
+    @Column(name = "published_date")
+    private LocalDate publishedDate;
 
-    // Getters and Setters
-    public String getId() {
-        return id;
-    }
+    // Inventory fields
+    @Column(name = "total_copies", nullable = false, columnDefinition = "integer default 0")
+    private Integer totalCopies = 0;
 
-    public void setId(String id) {
-        this.id = id;
-    }
+    @Column(name = "available_copies", nullable = false, columnDefinition = "integer default 0")
+    private Integer availableCopies = 0;
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getIsbn() {
-        return isbn;
-    }
-
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
-
-    @Override
-    public String toString() {
-        return "Book{" +
-                "id='" + id + '\'' +
-                ", title='" + title + '\'' +
-                ", author='" + author + '\'' +
-                ", isbn='" + isbn + '\'' +
-                '}';
-    }
+    @Column(name = "borrowed_copies", nullable = false, columnDefinition = "integer default 0")
+    private Integer borrowedCopies = 0;
 }

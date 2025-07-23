@@ -1,56 +1,31 @@
 package com.infosys.repository;
 
 import com.infosys.beans.Book;
+import jakarta.persistence.NamedNativeQuery;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Repository
-public class BookRepository {
-    private final List<Book> books = new ArrayList<>();
+public interface BookRepository extends JpaRepository<Book, Integer> {
+    @Query("SELECT COUNT(b) FROM Book b")
+    int countAllBooks();
 
-    // Add initial sample books
-    public BookRepository() {
-        books.add(new Book(UUID.randomUUID().toString(), "To Kill a Mockingbird", "Harper Lee", "9780061120084"));
-        books.add(new Book(UUID.randomUUID().toString(), "1984", "George Orwell", "9780451524935"));
-        books.add(new Book(UUID.randomUUID().toString(), "The Great Gatsby", "F. Scott Fitzgerald", "9780743273565"));
-    }
+    List<Book> findByTitleContainingIgnoreCase(String title);
+    List<Book> findByAuthorContainingIgnoreCase(String author);
+    List<Book> findByGenresContainingIgnoreCase(String genre);
+    List<Book> findByIsbn(String isbn);
+    List<Book> findByLanguage(String language);
+    List<Book> findByPublisher(String publisher);
+    List<Book> findByPublishedDateBetween(LocalDate startDate, LocalDate endDate);
 
-    public List<Book> findAll() {
-        return new ArrayList<>(books);
-    }
-
-    public Optional<Book> findById(String id) {
-        return books.stream()
-                .filter(book -> book.getId().equals(id))
-                .findFirst();
-    }
-
-    public Optional<Book> findByIsbn(String isbn) {
-        return books.stream()
-                .filter(book -> book.getIsbn().equals(isbn))
-                .findFirst();
-    }
-
-    public Book save(Book book) {
-        if (book.getId() == null || book.getId().isEmpty()) {
-            book.setId(UUID.randomUUID().toString());
-        } else {
-            // Remove existing book if it's an update operation
-            books.removeIf(b -> b.getId().equals(book.getId()));
-        }
-        books.add(book);
-        return book;
-    }
-
-    public boolean deleteById(String id) {
-        return books.removeIf(book -> book.getId().equals(id));
-    }
-
-    public long count() {
-        return books.size();
-    }
+    @Query("SELECT b FROM Book b WHERE " +
+            "LOWER(b.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(b.author) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(b.genres) LIKE LOWER(CONCAT('%', :query, '%'))")
+    List<Book> searchBooks(@Param("query") String query);
 }
