@@ -51,4 +51,9 @@ public class BorrowController {
     public Long getTotalFineAmount() {
         return borrowService.getTotalFineAmount();
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<BorrowResponseDTO>> searchBorrowRecords(@RequestParam String keyword) {
+        return ResponseEntity.ok(borrowService.searchBorrowRecords(keyword));
+    }
 }

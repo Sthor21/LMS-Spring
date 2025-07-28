@@ -130,6 +130,13 @@ public class BorrowService {
         return totalFine;
     }
 
+    public List<BorrowResponseDTO> searchBorrowRecords(String keyword) {
+        List<BorrowRecord> records = borrowRecordRepository.searchBorrowRecords(keyword);
+        return records.stream().map(borrowRecord -> modelMapper.
+                map(borrowRecord, BorrowResponseDTO.class)).
+                collect(Collectors.toList());
+    }
+
 
 
 

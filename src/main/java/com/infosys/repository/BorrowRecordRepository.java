@@ -61,4 +61,10 @@ public interface BorrowRecordRepository extends JpaRepository<BorrowRecord, Inte
 
     @Query("SELECT SUM(b.fineAmount) FROM BorrowRecord b WHERE b.user.id = :userId")
     Long getTotalFineByUserId(@Param("userId") Integer userId);
+
+    @Query("SELECT br FROM BorrowRecord br " +
+            "WHERE LOWER(br.user.firstName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "   OR LOWER(br.book.title) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "   OR str(br.id) LIKE CONCAT('%', :keyword, '%')")
+    List<BorrowRecord> searchBorrowRecords(String keyword);
 }
